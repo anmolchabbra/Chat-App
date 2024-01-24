@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import Add from '../img/addAvatar.png'
 import { createUserWithEmailAndPassword, updateProfile} from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import {auth, storage} from "../firebase"
+import {auth, storage, db} from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 export const Register = () => {
   const[err, setErr] = useState(false);
@@ -17,7 +18,7 @@ export const Register = () => {
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
 
-      const storageRef = ref(storage, file);
+      const storageRef = ref(storage, displayName);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on('state_changed', 
@@ -41,18 +42,36 @@ export const Register = () => {
         }, 
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            //Update prfile
             await updateProfile(res.user, {
               displayName,
               photoURL:downloadURL,
-            })
+            });
+            //Add user to cloud firestore collection users
+            await setDoc(doc(db, "users", res.user.uid), {
+              uid: res.user.uid,
+              displayName,
+              email,
+              photoURL : downloadURL
+            });
           });
         }
       );
+
+      
       
     } catch(err) {
       setErr(true);
     }
     
+  }
+
+
+  const[selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
   }
 
 
@@ -65,7 +84,8 @@ export const Register = () => {
                 <input type='text' placeholder='Profile name'/>
                 <input type='email' placeholder='email'/>
                 <input type='password' placeholder='password'/>
-                <input style={{display:"none"}} type='file' id='file' />
+                <input style={{display:"none"}} type='file' id='file' onChange={handleFileChange} />
+                {(selectedFile != null) && (<p>Uploaded File: {selectedFile.name}</p>)}
                 <label htmlFor='file'>
                   <img src={Add} alt=""/>
                   <span>Add an Avatar</span>
