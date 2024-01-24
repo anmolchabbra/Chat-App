@@ -54,6 +54,9 @@ export const Register = () => {
               email,
               photoURL : downloadURL
             });
+
+            //Set users chat document
+            await setDoc(doc(db, "userChars", res.user.uid), {})
           });
         }
       );
