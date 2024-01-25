@@ -4,9 +4,13 @@ import { createUserWithEmailAndPassword, updateProfile} from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {auth, storage, db} from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { useNavigate ,Link } from 'react-router-dom';
 
 export const Register = () => {
   const[err, setErr] = useState(false);
+  //navigate hook
+  const navigate = useNavigate()
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const displayName = e.target[0].value;
@@ -57,6 +61,10 @@ export const Register = () => {
 
             //Set users chat document
             await setDoc(doc(db, "userChars", res.user.uid), {})
+
+            //after registering we go to home page
+            navigate("/");
+
           });
         }
       );
@@ -87,7 +95,7 @@ export const Register = () => {
                 <input type='text' placeholder='Profile name'/>
                 <input type='email' placeholder='email'/>
                 <input type='password' placeholder='password'/>
-                <input style={{display:"none"}} type='file' id='file' onChange={handleFileChange} />
+                <input style={{ }} type='file' id='file' onChange={handleFileChange} />
                 {(selectedFile != null) && (<p>Uploaded File: {selectedFile.name}</p>)}
                 <label htmlFor='file'>
                   <img src={Add} alt=""/>
@@ -96,7 +104,7 @@ export const Register = () => {
                 <button>Sign up</button>
                 {err && <span>Something wen't wrong</span>}
             </form>
-            <p>Already has an account? Please Login</p>
+            <p>Already has an account? <Link to="/login">Please Login</Link></p>
         </div>
     </div>
   )
