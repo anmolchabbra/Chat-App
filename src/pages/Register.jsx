@@ -60,7 +60,7 @@ export const Register = () => {
             });
 
             //Set users chat document
-            await setDoc(doc(db, "userChars", res.user.uid), {})
+            await setDoc(doc(db, "userChats", res.user.uid), {})
 
             //after registering we go to home page
             navigate("/");
