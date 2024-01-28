@@ -95,7 +95,7 @@ export const Register = () => {
                 <input type='text' placeholder='Profile name'/>
                 <input type='email' placeholder='email'/>
                 <input type='password' placeholder='password'/>
-                <input style={{ }} type='file' id='file' onChange={handleFileChange} />
+                <input style={{display:"none" }} type='file' id='file' onChange={handleFileChange} />
                 {(selectedFile != null) && (<p>Uploaded File: {selectedFile.name}</p>)}
                 <label htmlFor='file'>
                   <img src={Add} alt=""/>
